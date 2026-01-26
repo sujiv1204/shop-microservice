@@ -1,0 +1,12 @@
+network:
+  ethernets:
+    enp1s0:  # Verify your interface name using 'ip addr'
+      dhcp4: no
+      addresses:
+        - 192.168.122.10/24  # <--- CHANGE THIS (.10, .11, or .12)
+      routes:
+        - to: default
+          via: 192.168.122.1
+      nameservers:
+        addresses: [8.8.8.8, 192.168.122.1]
+  version: 2
