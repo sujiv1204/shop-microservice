@@ -6,8 +6,7 @@ const app = express();
 app.use(express.json());
 app.use(cors());
 
-const MONGO_URI =
-    process.env.MONGO_URI || "mongodb://192.168.122.12:27017/shopdb";
+const MONGO_URI = process.env.MONGO_URI || "mongodb://localhost:27017/shopdb";
 mongoose.connect(MONGO_URI).then(() => console.log(" Order DB Connected"));
 
 // Note: Uses internal Docker DNS name 'inventory'
@@ -46,9 +45,7 @@ app.post("/checkout", async (req, res) => {
         const total = items.reduce((sum, i) => sum + i.price * i.quantity, 0);
         await new Order({ userId, items, total }).save();
 
-        console.log(
-            `[Order] Order processed successfully! Total: $${total}`,
-        );
+        console.log(`[Order] Order processed successfully! Total: $${total}`);
         res.json({ success: true, message: "Order Processed" });
     } catch (e) {
         console.error(`[Order] Checkout Failed: ${e.message}`);

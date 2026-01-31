@@ -5,8 +5,7 @@ const app = express();
 app.use(express.json());
 app.use(cors());
 
-const MONGO_URI =
-    process.env.MONGO_URI || "mongodb://192.168.122.12:27017/shopdb";
+const MONGO_URI = process.env.MONGO_URI || "mongodb://localhost:27017/shopdb";
 mongoose.connect(MONGO_URI).then(() => console.log(" Inventory DB Connected"));
 
 const Product = mongoose.model(

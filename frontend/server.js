@@ -7,7 +7,7 @@ app.set("view engine", "ejs");
 app.use(bodyParser.urlencoded({ extended: true }));
 
 // Configuration
-const BACKEND_IP = "http://192.168.122.11"; // VM 2 IP
+const BACKEND_IP = process.env.BACKEND_URL || "http://localhost"; // VM 2 IP
 const USER_ID = "demo_user";
 const PORT = 3000; // Internal Port
 
