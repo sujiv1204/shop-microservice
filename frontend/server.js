@@ -25,7 +25,7 @@ async function getCartCount() {
 // 1. Home Page (Updated to fetch Cart Count)
 app.get("/", async (req, res) => {
     try {
-        console.log(`[Frontend] 🌍 Loading Home Page...`);
+        console.log(`[Frontend] Loading Home Page...`);
 
         // Run requests in parallel for speed
         const [productsRes, cartCount] = await Promise.all([
