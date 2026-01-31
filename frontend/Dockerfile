@@ -1,3 +1,8 @@
-FROM nginx:alpine
-COPY index.html /usr/share/nginx/html/index.html
-COPY nginx.conf /etc/nginx/conf.d/default.conf
+FROM node:18
+WORKDIR /app
+COPY package*.json ./
+RUN npm install
+COPY . .
+# Expose 3000 internally (only accessible by Nginx)
+EXPOSE 3000 
+CMD ["node", "server.js"]

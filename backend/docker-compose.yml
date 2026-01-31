@@ -1,0 +1,20 @@
+version: "3"
+services:
+  inventory:
+    build: ./inventory-service
+    ports: ["3001:3001"]
+    environment:
+      - MONGO_URI=mongodb://192.168.122.12:27017/shopdb
+
+  order:
+    build: ./order-service
+    ports: ["3002:3002"]
+    environment:
+      - MONGO_URI=mongodb://192.168.122.12:27017/shopdb
+      - INVENTORY_URL=http://inventory:3001/products/deduct
+
+  cart:
+    build: ./cart-service
+    ports: ["3003:3003"]
+    environment:
+      - MONGO_URI=mongodb://192.168.122.12:27017/shopdb

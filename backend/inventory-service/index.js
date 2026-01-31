@@ -2,17 +2,12 @@ const express = require("express");
 const mongoose = require("mongoose");
 const cors = require("cors");
 const app = express();
-
 app.use(express.json());
 app.use(cors());
 
-// Connect to MongoDB on VM 3
-const MONGO_URI = process.env.MONGO_URI || "mongodb://localhost:27017/shopdb";
-
-mongoose
-    .connect(MONGO_URI)
-    .then(() => console.log(`Inventory DB Connected at ${MONGO_URI}`))
-    .catch((err) => console.error("DB Connection Error:", err));
+const MONGO_URI =
+    process.env.MONGO_URI || "mongodb://192.168.122.12:27017/shopdb";
+mongoose.connect(MONGO_URI).then(() => console.log(" Inventory DB Connected"));
 
 const Product = mongoose.model(
     "Product",
@@ -24,42 +19,43 @@ const Product = mongoose.model(
     }),
 );
 
-// GET all products
+// 1. Get All Products
 app.get("/products", async (req, res) => {
-    const products = await Product.find();
-    res.json(products);
+    console.log(
+        `[Inventory]  Received GET request for products ( from Frontend VM 1)`,
+    );
+    res.json(await Product.find());
 });
 
-// INTERNAL API: Deduct Stock (Called by Order Service)
+// 2. Deduct Stock (Internal API)
 app.post("/products/deduct/:id", async (req, res) => {
-    try {
-        const product = await Product.findById(req.params.id);
-        if (!product || product.stock < 1) {
-            return res
-                .status(400)
-                .json({ success: false, message: "Out of Stock" });
-        }
-        product.stock -= 1;
-        await product.save();
-        res.json({
-            success: true,
-            message: "Stock deducted",
-            newStock: product.stock,
-        });
-    } catch (err) {
-        res.status(500).json({ error: err.message });
+    const qty = req.body.qty || 1;
+    console.log(
+        `[Inventory] Request from ORDER SERVICE to deduct ${qty} item(s) from product ${req.params.id}`,
+    );
+
+    const product = await Product.findById(req.params.id);
+    if (!product || product.stock < qty) {
+        console.log(`[Inventory] Stock deduction failed: Insufficient stock.`);
+        return res.status(400).json({ success: false });
     }
+
+    product.stock -= qty;
+    await product.save();
+    console.log(`[Inventory] Stock deducted. New stock: ${product.stock}`);
+    res.json({ success: true, newStock: product.stock });
 });
 
-// Seed Data Route
+// 3. Seed DB
 app.post("/seed", async (req, res) => {
+    console.log(`[Inventory] Seeding Database...`);
     await Product.deleteMany({});
     await Product.insertMany([
-        { name: "Gaming Laptop", price: 1200, stock: 5, image: "💻" },
-        { name: "Mechanical Keyboard", price: 150, stock: 10, image: "⌨️" },
-        { name: "Wireless Mouse", price: 50, stock: 2, image: "🖱️" },
+        { name: "Gaming Laptop", price: 1500, stock: 5, image: "💻" },
+        { name: "Smartphone", price: 800, stock: 10, image: "📱" },
+        { name: "Headset", price: 200, stock: 2, image: "🎧" },
     ]);
-    res.json({ message: "Database Seeded!" });
+    res.json({ message: "Seeded!" });
 });
 
 app.listen(3001, () => console.log(" Inventory Service running on 3001"));

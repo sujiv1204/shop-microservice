@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+
+<body class="container p-5">
+    <div class="d-flex justify-content-between mb-4">
+        <h1>🛍️ Distributed Shop (VM 1)</h1>
+        <div>
+            <form action="/seed" method="POST" class="d-inline"><button class="btn btn-warning">Reset DB</button></form>
+            <a href="/cart" class="btn btn-outline-primary">View Cart 🛒</a>
+        </div>
+    </div>
+    <div class="row">
+        <% products.forEach(p=> { %>
+            <div class="col-md-4 mb-3">
+                <div class="card p-3 text-center shadow-sm">
+                    <div style="font-size: 50px;">
+                        <%= p.image %>
+                    </div>
+                    <h5>
+                        <%= p.name %>
+                    </h5>
+                    <p>Stock: <%= p.stock %>
+                    </p>
+                    <% if (p.stock> 0) { %>
+                        <form action="/cart/add" method="POST">
+                            <input type="hidden" name="productId" value="<%= p._id %>">
+                            <input type="hidden" name="name" value="<%= p.name %>">
+                            <input type="hidden" name="price" value="<%= p.price %>">
+                            <button class="btn btn-primary w-100">Add to Cart</button>
+                        </form>
+                        <% } else { %>
+                            <button class="btn btn-secondary w-100" disabled>Sold Out</button>
+                            <% } %>
+                </div>
+            </div>
+            <% }) %>
+    </div>
+</body>
+
+</html>
